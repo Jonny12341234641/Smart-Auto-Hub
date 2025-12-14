@@ -1,9 +1,28 @@
+// ============================================================================
+// IMPORTS
+// ============================================================================
+
+// React & Next.js Core Types
 import type React from "react";
 import type { Metadata } from "next";
+
+// Font Optimization
 import { Geist, Geist_Mono } from "next/font/google";
-import {Analytics} from "@vercel/analytics/next";
+
+// Vercel Analytics (Performance Tracking)
+import { Analytics } from "@vercel/analytics/next";
+
+// Global Styles
 import "./globals.css";
+
+// Application State Providers (Auth, Context, etc.)
 import Providers from "@/app/providers";
+
+// ============================================================================
+// FONT CONFIGURATION
+// ============================================================================
+// Configures the Geist font family with CSS variables for Tailwind integration.
+// ============================================================================
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,6 +33,13 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// ============================================================================
+// METADATA CONFIGURATION
+// ============================================================================
+// SEO settings for the entire application.
+// This controls what appears in browser tabs and search engine results.
+// ============================================================================
 
 export const metadata: Metadata = {
   title: "Smart AutoHub - Sameera Auto Traders",
@@ -29,7 +55,7 @@ export const metadata: Metadata = {
         media: "(prefers-color-scheme: dark)",
       },
       {
-        url: " ",
+        url: " ", // Placeholder for SVG or fallback icon
         type: "image/svg+xml",
       },
     ],
@@ -37,6 +63,22 @@ export const metadata: Metadata = {
   },
 };
 
+// ============================================================================
+// ROOT LAYOUT COMPONENT
+// ============================================================================
+
+/**
+ * RootLayout
+ * ----------------------------------------------------------------------------
+ * The top-level wrapper for the entire Next.js application.
+ * * Functionality:
+ * - Defines the <html> and <body> tags.
+ * - Applies global fonts and antialiasing.
+ * - Wraps the app in global <Providers> (e.g., SessionProvider for Auth).
+ * - Injects Vercel <Analytics> for traffic monitoring.
+ *
+ * @param {React.ReactNode} children - The page content to be rendered.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -44,14 +86,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`font-sans antialiased`}
-      >
+      <body className={`font-sans antialiased`}>
+        
+        {/* Providers Wrapper:
+          Wraps all child components to ensure they have access to global contexts
+          (like User Session, Theme, or Toast Notifications).
+        */}
         <Providers>
-            {children}
-            <Analytics />
-            </Providers>
-
+          {children}
+          
+          {/* Real-time traffic analytics */}
+          <Analytics />
+        </Providers>
 
       </body>
     </html>

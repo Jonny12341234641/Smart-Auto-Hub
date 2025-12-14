@@ -1,12 +1,30 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Header } from "@/components/Header"
-import { Footer } from "@/components/Footer"
-import { Button } from "@/components/ui/button"
-import { MessageSquare } from "lucide-react"
-import ChatBot from "@/components/ChatBot"
+// ============================================================================
+// IMPORTS
+// ============================================================================
+
+// React & Next.js Core
+import { useState } from "react";
+import Link from "next/link";
+
+// Layout & Custom Components
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import ChatBot from "@/components/ChatBot";
+
+// UI Components
+import { Button } from "@/components/ui/button";
+
+// Icons (Lucide React)
+import { MessageSquare } from "lucide-react";
+
+// ============================================================================
+// MOCK DATA
+// ============================================================================
+// TODO: Replace this array with a data fetch from your Backend API.
+// Endpoint Recommendation: GET /api/vehicles
+// ============================================================================
 
 const vehicles = [
   {
@@ -75,34 +93,68 @@ const vehicles = [
     transmission: "Automatic",
     image: "/toyota-corolla-2023.png",
   },
-]
+];
 
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
+/**
+ * VehiclesPage Component
+ * ----------------------------------------------------------------------------
+ * Displays the full inventory of cars with client-side filtering and sorting.
+ * * * Features:
+ * - Filter by Availability (Available, Shipped, Not Available).
+ * - Filter by Price Range (Slider input).
+ * - Sort by Newest or Price (Low/High).
+ * - Responsive Grid Layout for vehicle cards.
+ */
 export default function VehiclesPage() {
 
+  // ==========================================================================
+  // STATE MANAGEMENT
+  // ==========================================================================
 
-  const [sortBy, setSortBy] = useState("newest")
+  // Sorting State
+  const [sortBy, setSortBy] = useState("newest");
+
+  // Filtering State: Status Checkboxes
   const [filterAvailability, setFilterAvailability] = useState({
     Available: true,
     Shipped: true,
     "Not Available": true,
-  })
+  });
 
-  const [minPrice, setMinPrice] = useState(0)
-  const [maxPrice, setMaxPrice] = useState(30000000)
+  // Filtering State: Price Range
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(30000000);
 
+  // ==========================================================================
+  // FILTERING LOGIC
+  // ==========================================================================
+  
+  // Applies filters and sorting to the vehicle list in real-time.
+  // Note: For large datasets, this logic should move to the Backend (Server-Side Filtering).
   const filteredVehicles = vehicles
-    .filter((v) => filterAvailability[v.status])
-    .filter((v) => v.price >= minPrice && v.price <= maxPrice)
-    .sort((a, b) => {
-      if (sortBy === "price-low") return a.price - b.price
-      if (sortBy === "price-high") return b.price - a.price
-      return 0
-    })
+    .filter((v) => filterAvailability[v.status]) // Check status
+    .filter((v) => v.price >= minPrice && v.price <= maxPrice) // Check price
+    .sort((a, b) => { // Apply sorting
+      if (sortBy === "price-low") return a.price - b.price;
+      if (sortBy === "price-high") return b.price - a.price;
+      return 0; // Default (newest/id)
+    });
+
+  // ==========================================================================
+  // RENDER UI
+  // ==========================================================================
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
+      {/* ---------------------------------------------------------------------
+        HERO SECTION
+        --------------------------------------------------------------------- */}
       <section
         className="relative h-96 bg-gradient-to-r from-primary via-primary/90 to-secondary text-primary-foreground flex items-center mb-24"
         style={{
@@ -112,30 +164,33 @@ export default function VehiclesPage() {
           backgroundPosition: "center",
         }}
       >
+        {/* Overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
+        
         <div className="relative max-w-7xl mx-auto px-4 w-full">
-          <h1 className="text-6xl font-bold mb-4 text-balance">Find Your Perfect Car</h1>
+          <h1 className="text-6xl font-bold mb-4 text-balance">Find Your</h1> <h1 className="text-6xl font-bold mb-4 text-balance italic">Perfect Car</h1>
           <p className="text-xl opacity-90 text-balance max-w-2xl">
             Browse our extensive inventory of quality vehicles. From sedans to SUVs, we have something for everyone.
           </p>
         </div>
       </section>
 
+      {/* ---------------------------------------------------------------------
+        MAIN CONTENT GRID
+        --------------------------------------------------------------------- */}
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* <h1 className="text-4xl font-bold mb-8">Search Our Inventory</h1> */}
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Filters Panel */}
+          
+          {/* === LEFT COLUMN: FILTERS SIDEBAR === */}
           <div className="lg:col-span-1">
-            {/* <div className="bg-card rounded-lg p-6 border border-border sticky top-24"> */}
             <div className="bg-card rounded-lg p-6 border border-border sticky top-24 shadow-sm hover:shadow-md transition">  
               <h2 className="font-bold text-xl mb-6">Filters</h2>
 
-              {/* Availability Filter */}
+              {/* Filter Group: Availability */}
               <div className="mb-8">
                 <h3 className="font-semibold mb-4">Filter by Availability</h3>
                 {["Available", "Shipped", "Not Available"].map((status) => (
-                  // <label key={status} className="flex items-center gap-3 mb-3 cursor-pointer">
                   <label
                     key={status}
                     className="flex items-center gap-3 mb-3 cursor-pointer hover:text-primary transition"
@@ -156,10 +211,11 @@ export default function VehiclesPage() {
                 ))}
               </div>
 
-              {/* Price Filter */}
+              {/* Filter Group: Price Range */}
               <div className="mb-8">
                 <h3 className="font-semibold mb-4">Price Range</h3>
                 <div className="space-y-3">
+                  {/* Min Price Slider */}
                   <div>
                     <label className="text-sm text-muted-foreground">Min: LKR {minPrice.toLocaleString()}</label>
                     <input
@@ -172,6 +228,7 @@ export default function VehiclesPage() {
                       className="w-full accent-primary"
                     />
                   </div>
+                  {/* Max Price Slider */}
                   <div>
                     <label className="text-sm text-muted-foreground">Max: LKR {maxPrice.toLocaleString()}</label>
                     <input
@@ -187,16 +244,22 @@ export default function VehiclesPage() {
                 </div>
               </div>
 
+              {/* Reset Action */}
               <Button className="w-full" onClick={() => window.location.reload()}>
                 Reset Filters
               </Button>
             </div>
           </div>
 
-          {/* Results */}
+          {/* === RIGHT COLUMN: RESULTS GRID === */}
           <div className="lg:col-span-3">
+            
+            {/* Results Header (Count & Sort) */}
             <div className="flex items-center justify-between mb-8 bg-secondary/10 rounded-lg px-6 py-4">
-              <p className="text-muted-foreground font-semibold">Showing {filteredVehicles.length} vehicles</p>
+              <p className="text-muted-foreground font-semibold">
+                Showing {filteredVehicles.length} vehicles
+              </p>
+              
               <div className="flex items-center gap-3">
                 <label className="text-sm font-semibold">Sort By:</label>
                 <select
@@ -211,6 +274,7 @@ export default function VehiclesPage() {
               </div>
             </div>
 
+            {/* Vehicle Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredVehicles.map((vehicle) => (
                 <Link
@@ -218,12 +282,14 @@ export default function VehiclesPage() {
                   href={`/vehicles/${vehicle.id}`}
                   className="bg-card rounded-lg overflow-hidden border border-border hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
                 >
+                  {/* Card Image */}
                   <div className="relative h-56 bg-muted overflow-hidden">
                     <img
                       src={vehicle.image || "/placeholder.svg"}
                       alt={vehicle.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
+                    {/* Status Badge */}
                     <span
                       className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm ${
                         vehicle.status === "Available"
@@ -237,6 +303,7 @@ export default function VehiclesPage() {
                     </span>
                   </div>
 
+                  {/* Card Details */}
                   <div className="p-5">
                     <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition">{vehicle.name}</h3>
                     <p className="text-primary font-bold text-xl mb-3">LKR {vehicle.price.toLocaleString()}</p>
@@ -253,10 +320,9 @@ export default function VehiclesPage() {
         </div>
       </div>
 
-      {/* Chatbot Icon */}
+      {/* Global Widgets */}
       <ChatBot />
-
       <Footer />
     </div>
-  )
+  );
 }

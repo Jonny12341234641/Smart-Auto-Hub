@@ -1,31 +1,79 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Header } from "@/components/Header"
-import { Footer } from "@/components/Footer"
-import { Button } from "@/components/ui/button"
-import { Phone, Mail, MapPin, Clock, Send, MessageSquare, Building } from 'lucide-react'
-import ChatBot from "@/components/ChatBot"
- 
+// ============================================================================
+// IMPORTS
+// ============================================================================
+
+// React Core
+import { useState } from "react";
+
+// Layout & Custom Components
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import ChatBot from "@/components/ChatBot";
+
+// UI Components
+import { Button } from "@/components/ui/button";
+
+// Icons (Lucide React)
+import { 
+  Phone, Mail, MapPin, Clock, Send, 
+  MessageSquare, Building 
+} from 'lucide-react';
+
+/**
+ * ContactPage Component
+ * ----------------------------------------------------------------------------
+ * A comprehensive contact page providing multiple ways for users to reach out.
+ * * * Layout Strategy:
+ * - Hero Section: Visual engagement with contact context.
+ * - Two-Column Grid (Desktop): 
+ * - Left: Static contact info, business hours, and map locations.
+ * - Right: Interactive contact form, WhatsApp link, and FAQs.
+ * * * Functionality:
+ * - Controlled form inputs.
+ * - Simulated form submission with success feedback state.
+ */
 export default function ContactPage() {
+  
+  // ==========================================================================
+  // STATE MANAGEMENT
+  // ==========================================================================
+
+  // Form Data State
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     subject: "",
     message: "",
-  })
+  });
 
-  const [submitted, setSubmitted] = useState(false)
+  // UI State: Tracks if the form has been successfully "sent"
+  const [submitted, setSubmitted] = useState(false);
 
+  // ==========================================================================
+  // HANDLERS
+  // ==========================================================================
+
+  /**
+   * Updates the state dynamically based on the input's 'name' attribute.
+   */
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
+  /**
+   * Handles form submission.
+   * 1. Prevents page reload.
+   * 2. Sets 'submitted' to true to show success message.
+   * 3. Clears form data after 3 seconds (simulating an API reset).
+   */
   const handleSubmit = (e) => {
-    e.preventDefault()
-    setSubmitted(true)
+    e.preventDefault();
+    setSubmitted(true);
+    
     setTimeout(() => {
       setFormData({
         name: "",
@@ -33,16 +81,22 @@ export default function ContactPage() {
         phone: "",
         subject: "",
         message: "",
-      })
-      setSubmitted(false)
-    }, 3000)
-  }
+      });
+      setSubmitted(false);
+    }, 3000);
+  };
+
+  // ==========================================================================
+  // RENDER UI
+  // ==========================================================================
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Hero Section */}
+      {/* ---------------------------------------------------------------------
+        HERO SECTION
+        --------------------------------------------------------------------- */}
       <section
         className="relative h-96 bg-gradient-to-r from-primary via-primary/90 to-secondary text-primary-foreground flex items-center mb-24"
         style={{
@@ -52,20 +106,29 @@ export default function ContactPage() {
           backgroundPosition: "center",
         }}
       >
+        {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
+        
         <div className="relative max-w-7xl mx-auto px-4 w-full">
-          <h1 className="text-6xl font-bold mb-4 text-balance">Contact Us</h1>
+          <h1 className="text-6xl font-bold mb-4 text-balance italic leading-tight">Contact Us</h1>
           <p className="text-xl opacity-90 text-balance max-w-2xl">
             Have questions? We're here to help. Reach out to our team anytime.
           </p>
         </div>
       </section>
 
+      {/* ---------------------------------------------------------------------
+        MAIN CONTENT CONTAINER
+        --------------------------------------------------------------------- */}
       <div className="max-w-7xl mx-auto px-4 pb-24">
+        
+        {/* Grid Layout: 1 Column on Mobile, 3 Columns on Large Screens */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Contact Information */}
+          
+          {/* === LEFT COLUMN: CONTACT INFORMATION === */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Main Office */}
+            
+            {/* 1. Head Office Card */}
             <div className="bg-card rounded-lg p-6 border border-border shadow-sm hover:shadow-md transition">
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
@@ -86,7 +149,7 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Phone */}
+            {/* 2. Phone Card */}
             <div className="bg-card rounded-lg p-6 border border-border shadow-sm hover:shadow-md transition">
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
@@ -97,6 +160,7 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-bold text-lg mb-2">Phone</h3>
                   <p className="text-sm text-muted-foreground">
+                    {/* tel: link allows mobile users to click and call */}
                     <a href="tel:0772329595" className="hover:text-primary transition">
                       077 232 9595
                     </a>
@@ -106,7 +170,7 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Email */}
+            {/* 3. Email Card */}
             <div className="bg-card rounded-lg p-6 border border-border shadow-sm hover:shadow-md transition">
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
@@ -126,7 +190,7 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Business Hours */}
+            {/* 4. Business Hours Card */}
             <div className="bg-card rounded-lg p-6 border border-border shadow-sm hover:shadow-md transition">
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
@@ -145,7 +209,7 @@ export default function ContactPage() {
               </div>
             </div>
 
-          {/* Locations - Google Maps */}
+            {/* 5. Google Maps Locations */}
             <div className="bg-card rounded-lg p-6 border border-border">
               <div className="flex items-start gap-4 mb-4">
                 <div className="flex-shrink-0">
@@ -161,7 +225,7 @@ export default function ContactPage() {
 
               <div className="grid grid-cols-1 gap-4">
 
-                {/* Location 1 - Nugegoda Kohuwala */}
+                {/* Map 1: Nugegoda */}
                 <a
                   href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.239234396785!2d79.88612917599389!3d6.86190681913631!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae25bf8d0167ad7%3A0x50142863526f0c2!2sSameera%20Auto%20Traders%20-%20Kohuwala%20Branch!5e0!3m2!1sen!2slk!4v1764690973440!5m2!1sen!2slk"
                   target="_blank"
@@ -182,12 +246,12 @@ export default function ContactPage() {
                       loading="lazy" 
                       referrerPolicy="no-referrer-when-downgrade"
                       className="pointer-events-none">
-                  </iframe>
-                  <div className="absolute inset-0 bg-transparent group-hover:bg-primary/5 transition"></div>
+                    </iframe>
+                    <div className="absolute inset-0 bg-transparent group-hover:bg-primary/5 transition"></div>
                   </div>
                 </a>
 
-                {/* Location 2 - J'pura */}
+                {/* Map 2: J'pura */}
                 <a
                   href="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.0658309751516!2d79.89594727599393!3d6.882717618882704!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae25bc251893e3b%3A0x1ea9b033eab48ec!2sSameera%20Auto%20Traders!5e0!3m2!1sen!2slk!4v1764691627678!5m2!1sen!2slk"
                   target="_blank"
@@ -216,11 +280,14 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Contact Form */}
+          {/* === RIGHT COLUMN: FORM & EXTRAS === */}
           <div className="lg:col-span-2">
+            
+            {/* Contact Form Container */}
             <div className="bg-card rounded-lg p-8 border border-border shadow-sm">
               <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
 
+              {/* Success Notification */}
               {submitted && (
                 <div className="mb-6 p-4 rounded-lg bg-green-50 border border-green-200">
                   <p className="text-green-800 font-semibold">
@@ -229,9 +296,12 @@ export default function ContactPage() {
                 </div>
               )}
 
+              {/* Form Start */}
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Name */}
+                
+                {/* Name & Email Row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Name Input */}
                   <div>
                     <label className="block text-sm font-semibold mb-2">Full Name *</label>
                     <input
@@ -245,7 +315,7 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  {/* Email */}
+                  {/* Email Input */}
                   <div>
                     <label className="block text-sm font-semibold mb-2">Email Address *</label>
                     <input
@@ -260,7 +330,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                {/* Phone */}
+                {/* Phone Input */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">Phone Number</label>
                   <input
@@ -273,7 +343,7 @@ export default function ContactPage() {
                   />
                 </div>
 
-                {/* Subject */}
+                {/* Subject Select */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">Subject *</label>
                   <select
@@ -292,7 +362,7 @@ export default function ContactPage() {
                   </select>
                 </div>
 
-                {/* Message */}
+                {/* Message Textarea */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">Message *</label>
                   <textarea
@@ -314,15 +384,17 @@ export default function ContactPage() {
               </form>
             </div>
 
+            {/* Additional Contact Options */}
             <div className="mt-6">
-              {/* OR Divider */}
+              
+              {/* Divider */}
               <div className="flex items-center gap-4 my-6">
                 <div className="flex-1 h-px bg-border"></div>
                 <span className="text-sm font-semibold text-muted-foreground">OR</span>
                 <div className="flex-1 h-px bg-border"></div>
               </div>
 
-              {/* WhatsApp Section */}
+              {/* WhatsApp Call-to-Action */}
               <a 
                 href="htttps://wa.me/94772329595"
                 target="_blank"
@@ -330,7 +402,7 @@ export default function ContactPage() {
                 className="block bg-card rounded-lg p-6 border border-border hover:border-primary transition group"
               >
                 <div className="flex items-center justify-center gap-4">
-                  {/* WhatsApp Logo */}
+                  {/* WhatsApp SVG Icon */}
                   <svg
                     className="w-12 h-12 text-[#25D366] group-hover:scale-110 transition-transform"
                     fill="currentColor"
@@ -378,11 +450,12 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Chatbot Icon */}
-        <div className="fixed bottom-6 right-6 bg-primary text-primary-foreground rounded-full p-4 shadow-lg cursor-pointer hover:scale-110 transition">
-            <MessageSquare size={32} />
-        </div>
+      {/* Floating Action Button (Manual) */}
+      <div className="fixed bottom-6 right-6 bg-primary text-primary-foreground rounded-full p-4 shadow-lg cursor-pointer hover:scale-110 transition">
+        <MessageSquare size={32} />
+      </div>
 
+      {/* Global Widgets */}
       <ChatBot />        
       <Footer />
     </div>

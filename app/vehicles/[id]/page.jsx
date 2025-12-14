@@ -1,12 +1,30 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Header } from "@/components/Header"
-import { Footer } from "@/components/Footer"
-import { Button } from "@/components/ui/button"
-import { Star, ChevronLeft, MessageSquare } from 'lucide-react'
-import ChatBot from "@/components/ChatBot"
+// ============================================================================
+// IMPORTS
+// ============================================================================
+
+// React & Next.js Core
+import { useState } from "react";
+import Link from "next/link";
+
+// Layout & Custom Components
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import ChatBot from "@/components/ChatBot";
+
+// UI Components
+import { Button } from "@/components/ui/button";
+
+// Icons (Lucide React)
+import { Star, ChevronLeft } from 'lucide-react';
+
+// ============================================================================
+// MOCK DATA
+// ============================================================================
+// TODO: In production, fetch this data using the ID from the URL.
+// Endpoint Recommendation: GET /api/vehicles/:id
+// ============================================================================
 
 const vehiclesData = {
   1: {
@@ -51,30 +69,62 @@ const vehiclesData = {
       { author: "Lisa R.", rating: 5, text: "Perfect daily driver." },
     ],
   },
-}
+};
 
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
+/**
+ * VehicleDetailsPage Component
+ * ----------------------------------------------------------------------------
+ * Dynamic page component representing a single vehicle's details.
+ * * * Features:
+ * - Dynamic Data Loading: Uses `params.id` to load specific car data.
+ * - Image Gallery: Main image + thumbnails.
+ * - Key Specs Grid: Displays mileage, transmission, fuel, etc.
+ * - Booking Integration: Pre-fills consultation form via URL query params.
+ * - Leasing Calculator: Client-side financial estimation tool.
+ */
 export default function VehicleDetailsPage({ params }) {
-  const vehicle = vehiclesData[params.id] || vehiclesData["1"]
-  const [monthlyPayment, setMonthlyPayment] = useState(0)
-  const [loanAmount, setLoanAmount] = useState(vehicle.price)
-  const [downPayment, setDownPayment] = useState(0)
-  const [loanTerm, setLoanTerm] = useState(5)
+  
+  // 1. Load Data
+  // Fallback to ID "1" if the specific ID isn't found in mock data
+  const vehicle = vehiclesData[params.id] || vehiclesData["1"];
 
+  // 2. Calculator State
+  const [monthlyPayment, setMonthlyPayment] = useState(0);
+  const [loanAmount, setLoanAmount] = useState(vehicle.price);
+  const [downPayment, setDownPayment] = useState(0);
+  const [loanTerm, setLoanTerm] = useState(5); // Default to 5 years
+
+  /**
+   * Calculates the estimated monthly payment using standard amortization.
+   * Formula: M = P [ i(1 + i)^n ] / [ (1 + i)^n – 1 ]
+   */
   const calculatePayment = () => {
-    const principal = loanAmount - downPayment
-    const monthlyRate = 0.06 / 12
-    const numberOfPayments = loanTerm * 12
+    const principal = loanAmount - downPayment;
+    const monthlyRate = 0.06 / 12; // Assumed 6% annual interest
+    const numberOfPayments = loanTerm * 12;
+    
     const monthlyPaymentCalc =
       (principal * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments))) /
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
-    setMonthlyPayment(monthlyPaymentCalc)
-  }
+      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+      
+    setMonthlyPayment(monthlyPaymentCalc);
+  };
+
+  // ==========================================================================
+  // RENDER UI
+  // ==========================================================================
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        
+        {/* --- Navigation: Back Button --- */}
         <Button variant="ghost" asChild className="mb-6">
           <Link href="/vehicles">
             <ChevronLeft size={18} className="mr-2" />
@@ -82,9 +132,12 @@ export default function VehicleDetailsPage({ params }) {
           </Link>
         </Button>
 
+        {/* --- Top Section: Images & Key Info --- */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {/* Left Column - Images */}
+          
+          {/* LEFT COLUMN: IMAGE GALLERY */}
           <div className="lg:col-span-1">
+            {/* Main Featured Image */}
             <div className="bg-muted rounded-lg overflow-hidden mb-4 h-80">
               <img
                 src={vehicle.image || "/placeholder.svg"}
@@ -92,6 +145,7 @@ export default function VehicleDetailsPage({ params }) {
                 className="w-full h-full object-cover"
               />
             </div>
+            {/* Thumbnails Grid */}
             <div className="grid grid-cols-3 gap-2">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="bg-muted rounded h-20">
@@ -105,12 +159,17 @@ export default function VehicleDetailsPage({ params }) {
             </div>
           </div>
 
-          {/* Right Column - Info */}
+          {/* RIGHT COLUMN: VEHICLE INFORMATION */}
           <div className="lg:col-span-2">
+            
+            {/* Header Info (Name, Price, Status) */}
             <div className="mb-6">
               <h1 className="text-4xl font-bold mb-3">{vehicle.name}</h1>
               <div className="flex items-center gap-4 mb-4">
-                <span className="text-3xl font-bold text-primary">LKR {vehicle.price.toLocaleString()}</span>
+                <span className="text-3xl font-bold text-primary">
+                  LKR {vehicle.price.toLocaleString()}
+                </span>
+                {/* Dynamic Status Badge */}
                 <span
                   className={`px-4 py-2 rounded-lg font-semibold ${
                     vehicle.status === "Available"
@@ -124,7 +183,7 @@ export default function VehicleDetailsPage({ params }) {
               <p className="text-lg text-muted-foreground">{vehicle.location}</p>
             </div>
 
-            {/* Key Details Table */}
+            {/* Technical Specifications Table */}
             <div className="bg-card rounded-lg border border-border p-6 mb-6">
               <h3 className="font-bold text-lg mb-4">Vehicle Details</h3>
               <div className="grid grid-cols-2 gap-4">
@@ -159,11 +218,18 @@ export default function VehicleDetailsPage({ params }) {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Call to Action Buttons */}
             <div className="flex gap-4">
-              <Button className="flex-1 h-12" size="lg">
-                Book Appointment
-              </Button>
+              {/* Pass vehicle details via URL params to auto-fill the form */}
+              <Link
+                href={`/consultation?make=${vehicle.make}&model=${vehicle.model}&year=${vehicle.year}`}
+                passHref
+              >
+                <Button as="a" className="flex-1 h-12" size="lg">
+                  Book Appointment
+                </Button>
+              </Link>
+              
               <Button variant="outline" className="flex-1 h-12 bg-transparent" size="lg">
                 Book Technical Consultation
               </Button>
@@ -171,17 +237,18 @@ export default function VehicleDetailsPage({ params }) {
           </div>
         </div>
 
-        {/* Description */}
+        {/* --- Middle Section: Description --- */}
         <div className="bg-card rounded-lg border border-border p-6 mb-12">
           <h3 className="font-bold text-xl mb-4">Description</h3>
           <p className="text-foreground leading-relaxed">{vehicle.description}</p>
         </div>
 
-        {/* Leasing Calculator */}
+        {/* --- Middle Section: Leasing Calculator --- */}
         <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-border p-8 mb-12">
           <h3 className="font-bold text-2xl mb-6">Estimate Your Monthly Payment</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Input: Loan Amount */}
             <div>
               <label className="block text-sm font-semibold mb-2">Loan Amount (LKR)</label>
               <input
@@ -192,6 +259,7 @@ export default function VehicleDetailsPage({ params }) {
               />
             </div>
 
+            {/* Input: Down Payment */}
             <div>
               <label className="block text-sm font-semibold mb-2">Down Payment (LKR)</label>
               <input
@@ -202,6 +270,7 @@ export default function VehicleDetailsPage({ params }) {
               />
             </div>
 
+            {/* Input: Loan Term */}
             <div>
               <label className="block text-sm font-semibold mb-2">Loan Term (Years)</label>
               <select
@@ -217,6 +286,7 @@ export default function VehicleDetailsPage({ params }) {
               </select>
             </div>
 
+            {/* Action: Calculate */}
             <div className="flex items-end">
               <Button onClick={calculatePayment} className="w-full h-12">
                 Calculate Payment
@@ -224,6 +294,7 @@ export default function VehicleDetailsPage({ params }) {
             </div>
           </div>
 
+          {/* Result: Monthly Payment Display */}
           {monthlyPayment > 0 && (
             <div className="mt-6 p-4 bg-primary/20 rounded-lg border border-primary/30">
               <p className="text-sm text-muted-foreground mb-1">Estimated Monthly Payment</p>
@@ -234,7 +305,7 @@ export default function VehicleDetailsPage({ params }) {
           )}
         </div>
 
-        {/* Reviews Section */}
+        {/* --- Bottom Section: Reviews --- */}
         <div className="mb-12">
           <h3 className="font-bold text-2xl mb-6">Customer Reviews</h3>
 
@@ -260,10 +331,10 @@ export default function VehicleDetailsPage({ params }) {
         </div>
       </div>
 
-      {/* Chatbot Icon */}
+      {/* Global Widgets */}
       <ChatBot />
-
       <Footer />
+      
     </div>
   )
 }

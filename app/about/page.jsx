@@ -1,45 +1,67 @@
-import Link from "next/link"
-import { Header } from "@/components/Header"
-import { Footer } from "@/components/Footer"
-import { Button } from "@/components/ui/button"
-import { Award, MessageSquare, Target, Users, Zap } from 'lucide-react'
-import ChatBot from "@/components/ChatBot"
+"use client";
 
+// ============================================================================
+// IMPORTS
+// ============================================================================
+
+// Core Next.js Components
+import Link from "next/link";
+
+// Custom Layout Components
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import ChatBot from "@/components/ChatBot";
+
+// UI Components
+import { Button } from "@/components/ui/button";
+
+// Icons (Lucide React)
+import { Award, MessageSquare, Target, Users, Zap } from 'lucide-react';
+
+/**
+ * AboutPage Component
+ * ----------------------------------------------------------------------------
+ * This page serves as the "About Us" landing for the Smart AutoHub platform.
+ * * Purpose:
+ * - To build trust with potential customers by sharing the company story.
+ * - To showcase the team, mission, vision, and core values.
+ * - To provide social proof through customer moments.
+ * * * Design Features:
+ * - Uses large, immersive hero images with gradients.
+ * - Features responsive grids for team members and values.
+ * - Incorporates "Card" designs for readability.
+ */
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
+      
+      {/* ----------------- GLOBAL HEADER ----------------- */}
       <Header />
 
-      {/* Hero Section */}
-      {/* <section
-        className="relative h-80 bg-gradient-to-r from-primary via-primary/90 to-secondary text-primary-foreground flex items-center"
-        style={{
-          backgroundImage: "url(/placeholder.svg?height=320&width=1200&query=modern car showroom building)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/40"></div>
-        <div className="relative max-w-7xl mx-auto px-4 w-full">
-          <h1 className="text-5xl font-bold mb-4 text-balance">About Sameera Auto Traders</h1>
-          <p className="text-xl opacity-90 text-balance">
-            Your trusted partner in finding the perfect vehicle since we started our journey in the automotive industry.
-          </p>
-        </div>
-      </section> */}
-
+      {/* =======================================================================
+        HERO SECTION
+        =======================================================================
+        - Large full-width background image with overlay.
+        - Sets the tone for the page with a strong headline.
+      */}
       <section
         className="relative h-96 bg-gradient-to-br from-primary via-primary/90 to-accent text-primary-foreground flex items-center"
         style={{
+          // Note: Placeholder image URL includes query for 'automotive dealership'
           backgroundImage:
             "url(/placeholder.svg?height=384&width=1920&query=modern automotive dealership building exterior professional facade)",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
+        {/* Dark Overlay for Text Readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
+        
+        {/* Hero Content */}
         <div className="relative max-w-7xl mx-auto px-4 w-full">
-          <h1 className="text-5xl lg:text-6xl font-bold mb-4 text-balance">About Sameera Auto Traders</h1>
+          <h1 className="text-5xl lg:text-6xl font-bold mb-4 text-balance italic leading-tight">
+            About Us
+          </h1>
           <p className="text-xl lg:text-2xl opacity-95 text-balance max-w-2xl">
             Your trusted partner in finding the perfect vehicle since we started our journey in the automotive industry.
           </p>
@@ -47,11 +69,24 @@ export default function AboutPage() {
       </section>
 
 
+      {/* =======================================================================
+        MAIN CONTENT CONTAINER
+        =======================================================================
+        - Wraps all subsequent sections in a centered, constrained width container.
+        - Adds vertical spacing (py-16) between the header/footer and content.
+      */}
       <div className="max-w-7xl mx-auto px-4 py-16 space-y-16">
-        {/* Company Overview */}
-       <section>
+        
+        {/* ---------------------------------------------------------------------
+          SECTION 1: COMPANY OVERVIEW ("OUR STORY")
+          ---------------------------------------------------------------------
+          - Split layout: Text on left, Image on right.
+        */}
+        <section>
           <h2 className="text-4xl font-bold mb-8">Our Story</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            
+            {/* Story Text */}
             <div className="space-y-6">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Sameera Auto Traders has been a leading automotive dealership in Sri Lanka, dedicated to providing
@@ -67,6 +102,8 @@ export default function AboutPage() {
                 satisfied customers and continuing our commitment to excellence in the automotive sector.
               </p>
             </div>
+
+            {/* Story Image */}
             <div className="relative h-96 bg-muted rounded-2xl overflow-hidden shadow-2xl group">
               <img
                 src="/luxury-car-showroom-interior-modern-vehicles-displ.jpg"
@@ -78,8 +115,14 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Our Team / Happy customer Section */}
+        {/* ---------------------------------------------------------------------
+          SECTION 2: OUR TEAM & SOCIAL PROOF
+          ---------------------------------------------------------------------
+          - Displays team members in a 4-column grid.
+          - Followed by a "Happy Customer Moments" gallery.
+        */}
         <section>
+          {/* Section Header */}
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">Meet Our Expert Team</h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -87,7 +130,10 @@ export default function AboutPage() {
             </p>
           </div>
 
+          {/* Team Members Grid */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+            
+            {/* Member 1: Managing Director */}
             <div className="text-center group">
               <div className="relative mb-4 overflow-hidden rounded-2xl">
                 <img
@@ -102,6 +148,7 @@ export default function AboutPage() {
               <p className="text-sm text-muted-foreground">15+ years in automotive industry</p>
             </div>
 
+            {/* Member 2: Technical Consultant */}
             <div className="text-center group">
               <div className="relative mb-4 overflow-hidden rounded-2xl">
                 <img
@@ -116,6 +163,7 @@ export default function AboutPage() {
               <p className="text-sm text-muted-foreground">Expert in vehicle inspection</p>
             </div>
 
+            {/* Member 3: Sales Executive */}
             <div className="text-center group">
               <div className="relative mb-4 overflow-hidden rounded-2xl">
                 <img
@@ -130,6 +178,7 @@ export default function AboutPage() {
               <p className="text-sm text-muted-foreground">Customer satisfaction specialist</p>
             </div>
 
+            {/* Member 4: Service Manager */}
             <div className="text-center group">
               <div className="relative mb-4 overflow-hidden rounded-2xl">
                 <img
@@ -145,9 +194,11 @@ export default function AboutPage() {
             </div>
           </div>
 
+          {/* Happy Customers Gallery */}
           <div className="bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50 dark:from-blue-950/20 dark:via-purple-950/10 dark:to-pink-950/20 rounded-2xl p-10">
             <h3 className="text-2xl font-bold mb-6 text-center">Happy Customer Moments</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              
               <div className="relative h-48 rounded-xl overflow-hidden group shadow-lg">
                 <img
                   src="/happy-customer-receiving-car-keys-from-salesperson.jpg"
@@ -155,6 +206,7 @@ export default function AboutPage() {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
+
               <div className="relative h-48 rounded-xl overflow-hidden group shadow-lg">
                 <img
                   src="/smiling-customer-standing-next-to-new-car-at-deale.jpg"
@@ -162,6 +214,7 @@ export default function AboutPage() {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
+
               <div className="relative h-48 rounded-xl overflow-hidden group shadow-lg">
                 <img
                   src="/family-celebrating-new-car-purchase-at-automotive-.jpg"
@@ -169,6 +222,7 @@ export default function AboutPage() {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
+
               <div className="relative h-48 rounded-xl overflow-hidden group shadow-lg">
                 <img
                   src="/placeholder.svg?height=192&width=256"
@@ -181,9 +235,15 @@ export default function AboutPage() {
         </section>
 
 
-        {/* Mission & Vision */}
+        {/* ---------------------------------------------------------------------
+          SECTION 3: MISSION & VISION
+          ---------------------------------------------------------------------
+          - Uses a distinct background styling to highlight corporate philosophy.
+        */}
         <section className="bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50 dark:from-blue-950/20 dark:via-purple-950/10 dark:to-pink-950/20 rounded-2xl p-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            
+            {/* Mission Statement */}
             <div className="space-y-4">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
@@ -197,6 +257,8 @@ export default function AboutPage() {
                 hassle-free.
               </p>
             </div>
+
+            {/* Vision Statement */}
             <div className="space-y-4">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-14 h-14 bg-purple-500 rounded-xl flex items-center justify-center shadow-lg">
@@ -213,13 +275,20 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Core Values */}
+        {/* ---------------------------------------------------------------------
+          SECTION 4: CORE VALUES
+          ---------------------------------------------------------------------
+          - 4-column layout showcasing key pillars of the business.
+          - Each card has a hover effect and unique gradient icon.
+        */}
         <section>
           <h2 className="text-4xl font-bold mb-4 text-center">Our Core Values</h2>
           <p className="text-muted-foreground text-lg text-center mb-12 max-w-2xl mx-auto">
             The principles that guide everything we do
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* Value 1: Quality */}
             <div className="bg-card rounded-xl p-8 border border-border text-center hover:shadow-xl transition-all duration-300 group">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl mb-6 shadow-lg group-hover:scale-110 transition-transform">
                 <Award className="text-white" size={36} />
@@ -230,6 +299,7 @@ export default function AboutPage() {
               </p>
             </div>
 
+            {/* Value 2: Customer Focus */}
             <div className="bg-card rounded-xl p-8 border border-border text-center hover:shadow-xl transition-all duration-300 group">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-2xl mb-6 shadow-lg group-hover:scale-110 transition-transform">
                 <Users className="text-white" size={36} />
@@ -240,6 +310,7 @@ export default function AboutPage() {
               </p>
             </div>
 
+            {/* Value 3: Innovation */}
             <div className="bg-card rounded-xl p-8 border border-border text-center hover:shadow-xl transition-all duration-300 group">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl mb-6 shadow-lg group-hover:scale-110 transition-transform">
                 <Zap className="text-white" size={36} />
@@ -250,6 +321,7 @@ export default function AboutPage() {
               </p>
             </div>
 
+            {/* Value 4: Transparency */}
             <div className="bg-card rounded-xl p-8 border border-border text-center hover:shadow-xl transition-all duration-300 group">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl mb-6 shadow-lg group-hover:scale-110 transition-transform">
                 <Target className="text-white" size={36} />
@@ -262,10 +334,15 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Why Choose Us */}
+        {/* ---------------------------------------------------------------------
+          SECTION 5: WHY CHOOSE US
+          ---------------------------------------------------------------------
+          - A dense grid of 6 cards explaining competitive advantages.
+        */}
         <section>
           <h2 className="text-3xl font-bold mb-8">Why Choose Sameera Auto Traders?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
             <div className="bg-card rounded-lg p-6 border border-border">
               <h3 className="font-bold text-lg mb-3">Wide Selection</h3>
               <p className="text-muted-foreground">
@@ -311,7 +388,11 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* ---------------------------------------------------------------------
+          SECTION 6: CALL TO ACTION (CTA)
+          ---------------------------------------------------------------------
+          - Final push to direct users to browse vehicles or book a consultation.
+        */}
         <section className="bg-gradient-to-r from-primary to-accent rounded-lg p-12 text-center text-primary-foreground">
           <h2 className="text-3xl font-bold mb-4">Ready to Find Your Perfect Vehicle?</h2>
           <p className="text-lg mb-8 opacity-90">
@@ -328,10 +409,10 @@ export default function AboutPage() {
         </section>
       </div>
 
-      {/* Chatbot Icon */}
+      {/* ----------------- GLOBAL FOOTER & CHATBOT ----------------- */}
       <ChatBot />
-
       <Footer />
+      
     </div>
   )
 }

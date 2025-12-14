@@ -1,92 +1,147 @@
 "use client";
 
+// ============================================================================
+// IMPORTS
+// ============================================================================
+
+// React & Next.js Core
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+
+// Icons
 import { FcGoogle } from "react-icons/fc";
+
+// Custom Components
 import ChatBot from "@/components/ChatBot";
 
 /**
  * RegisterPage Component
- * * * A modern, split-screen registration interface.
- * * Features:
- * - "Popped-up" Material Design form card with elevation (shadows).
- * - Responsive split layout (Branding left, Form right).
- * - Full integration with global CSS variables for theming.
+ * ----------------------------------------------------------------------------
+ * A responsive registration page featuring a split-screen layout.
+ * * * Design Philosophy:
+ * - Uses a "Card-based" elevation design for the form to make it pop.
+ * - Split layout: Branding on the left (desktop only), Form on the right.
+ * * * Functionality:
+ * - Captures User Data: Email, Username, Password, and Phone Number.
+ * - Country Code Selector: Pre-built options for international numbers.
+ * - API Integration: POSTs data to local /api/auth/register endpoint.
+ * - Social Auth: Provides a button for Google OAuth redirection.
  */
 export default function RegisterPage() {
     const router = useRouter();
 
-    // -- State Management --
-    // maintaining separate states for form clarity
-    const [email, setEmail]             = useState("");
-    const [username, setUsername]       = useState("");
-    const [phone, setPhone]             = useState("");
-    const [countryCode, setCountryCode] = useState("+94");
-    const [password, setPassword]       = useState("");
-    const [loading, setLoading]         = useState(false);
-    const [err, setErr]                 = useState("");
-
-    // -- Logic Handlers --
+    // ========================================================================
+    // STATE MANAGEMENT
+    // ========================================================================
     
-    // Handles the form submission to the local auth API
+    // Form Data States
+    // We keep these separate to allow for individual validation logic if needed later.
+    const [email, setEmail]             = useState<string>("");
+    const [username, setUsername]       = useState<string>("");
+    const [password, setPassword]       = useState<string>("");
+    const [phone, setPhone]             = useState<string>("");
+    
+    // Default to Sri Lanka (+94)
+    const [countryCode, setCountryCode] = useState<string>("+94");
+
+    // UI Feedback States
+    const [loading, setLoading]         = useState<boolean>(false);
+    const [err, setErr]                 = useState<string>("");
+
+    // ========================================================================
+    // LOGIC HANDLERS
+    // ========================================================================
+    
+    /**
+     * handleRegister
+     * ------------------------------------------------------------------------
+     * Submits the registration form to the backend.
+     * 1. Prevents default HTML form submission.
+     * 2. Sets loading state to true (disables button).
+     * 3. Combines country code and phone number into a single string.
+     * 4. Sends a POST request to the API.
+     * 5. Redirects to Login page on success.
+     */
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setErr("");
+        setErr(""); // Clear previous errors
 
         try {
+            // Construct the payload matching the backend expectation
+            const payload = {
+                email,
+                username,
+                password,
+                phone: `${countryCode}${phone}`, // e.g., "+94771234567"
+            };
+
             const res = await fetch("/api/auth/register", {
                 method: "POST",
-                body: JSON.stringify({
-                    email,
-                    username,
-                    password,
-                    phone: `${countryCode}${phone}`,
-                }),
+                body: JSON.stringify(payload),
             });
     
             setLoading(false);
     
+            // Handle API Errors (e.g., 409 Conflict if user exists)
             if (!res.ok) {
                 setErr("Account already exists");
                 return;
             }
     
+            // Success: Navigate user to login screen
             router.push("/login");
+
         } catch (error) {
+            // Catch network errors or unexpected crashes
             setLoading(false);
             setErr("An unexpected error occurred");
         }
     };
 
-    // Redirects browser to Google OAuth endpoint
+    /**
+     * loginWithGoogle
+     * ------------------------------------------------------------------------
+     * Redirects the user to the backend route that initiates the Google OAuth flow.
+     * Note: We use window.location.href instead of router.push because this leaves
+     * our Next.js app context to go to an external provider (Google).
+     */
     const loginWithGoogle = () => {
         window.location.href = "/api/auth/google";
     };
 
+    // ========================================================================
+    // RENDER UI
+    // ========================================================================
+
     return (
         <main className="flex min-h-screen w-full bg-background text-foreground">
             
-            {/* Left Section: Branding & Identity */}
+            {/* ----------------- LEFT SECTION: BRANDING ----------------- */}
+            {/* Visible only on large screens (lg:flex) */}
             <BrandingSection />
 
-            {/* Right Section: Registration Form */}
+            {/* ----------------- RIGHT SECTION: REGISTRATION FORM ----------------- */}
             <div className="w-full lg:w-1/2 flex items-center justify-center p-6 bg-muted/20 relative">
                 
                 {/* Floating Card Container */}
+                {/* Contains shadow-2xl for depth and rounded corners for modern look */}
                 <div className="w-full max-w-md bg-card text-card-foreground shadow-2xl rounded-2xl border border-border p-8 z-10 relative ring-1 ring-inset ring-gray-200">
                     
+                    {/* Header: Title & Subtitle */}
                     <FormHeader />
 
+                    {/* Social Auth Buttons */}
                     <SocialSignup onGoogleClick={loginWithGoogle} />
 
+                    {/* Divider: "OR" */}
                     <Divider />
 
                     {/* Main Registration Form */}
                     <form className="space-y-4" onSubmit={handleRegister}>
                         
-                        {/* Username Field */}
+                        {/* --- Username Input --- */}
                         <div className="space-y-1">
                             <label className="text-sm font-medium leading-none">Username</label>
                             <input
@@ -98,7 +153,7 @@ export default function RegisterPage() {
                             />
                         </div>
 
-                        {/* Email Field */}
+                        {/* --- Email Input --- */}
                         <div className="space-y-1">
                             <label className="text-sm font-medium leading-none">Email</label>
                             <input
@@ -110,10 +165,11 @@ export default function RegisterPage() {
                             />
                         </div>
 
-                        {/* Phone Number Group */}
+                        {/* --- Phone Number Input Group --- */}
                         <div className="space-y-1">
                             <label className="text-sm font-medium leading-none">Phone Number</label>
                             <div className="flex gap-2">
+                                {/* Country Code Dropdown */}
                                 <select
                                     onChange={(e) => setCountryCode(e.target.value)}
                                     className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
@@ -126,6 +182,7 @@ export default function RegisterPage() {
                                     <option value="+61">🇦🇺 +61</option>
                                 </select>
 
+                                {/* Phone Number Input */}
                                 <input
                                     type="number"
                                     placeholder="7xxxxxxx"
@@ -136,7 +193,7 @@ export default function RegisterPage() {
                             </div>
                         </div>
 
-                        {/* Password Field */}
+                        {/* --- Password Input --- */}
                         <div className="space-y-1">
                             <label className="text-sm font-medium leading-none">Password</label>
                             <input
@@ -148,14 +205,14 @@ export default function RegisterPage() {
                             />
                         </div>
 
-                        {/* Error Feedback */}
+                        {/* --- Error Feedback Banner --- */}
                         {err && (
-                            <div className="p-3 rounded-md bg-destructive/15 text-destructive text-sm font-medium text-center">
+                            <div className="p-3 rounded-md bg-destructive/15 text-destructive text-sm font-medium text-center animate-pulse">
                                 {err}
                             </div>
                         )}
 
-                        {/* Submit Button */}
+                        {/* --- Submit Button --- */}
                         <button
                             type="submit"
                             disabled={loading}
@@ -175,7 +232,7 @@ export default function RegisterPage() {
                         </button>
                     </form>
 
-                    {/* Login Redirect Footer */}
+                    {/* --- Footer: Redirect to Login --- */}
                     <div className="text-center text-sm text-muted-foreground mt-6">
                         Already have an account?
                         <button
@@ -188,22 +245,31 @@ export default function RegisterPage() {
                 </div>
             </div>
             
+            {/* Global Chatbot Widget */}
             <ChatBot />
         </main>
     );
 }
 
-// ----------------------------------------------------------------------
+// ============================================================================
 // SUB-COMPONENTS
-// ----------------------------------------------------------------------
+// Extracted to separate rendering logic from state logic for cleaner code.
+// ============================================================================
 
+/**
+ * BrandingSection
+ * ----------------------------------------------------------------------------
+ * Displays the company logo and welcome message.
+ * Only rendered on Desktop screens due to `hidden lg:flex`.
+ */
 function BrandingSection() {
     return (
         <div className="hidden lg:flex w-1/2 relative flex-col items-center justify-center p-12 overflow-hidden bg-red-900 text-primary-foreground">
-            {/* Overlay Gradient for Texture */}
+            {/* Overlay Gradient for Texture/Depth */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-0"></div>
             
             <div className="relative z-10 flex flex-col items-center text-center animate-in fade-in zoom-in duration-700">
+                {/* Logo Container with Ring effect */}
                 <div className="w-48 h-48 bg-white rounded-full flex items-center justify-center shadow-2xl mb-8 p-6 ring-4 ring-white/20">
                     <div className="relative w-full h-full">
                         <Image 
@@ -226,6 +292,11 @@ function BrandingSection() {
     );
 }
 
+/**
+ * FormHeader
+ * ----------------------------------------------------------------------------
+ * Title and subtitle for the registration card.
+ */
 function FormHeader() {
     return (
         <div className="text-center mb-6">
@@ -239,6 +310,11 @@ function FormHeader() {
     );
 }
 
+/**
+ * SocialSignup
+ * ----------------------------------------------------------------------------
+ * Renders the "Continue with Google" button.
+ */
 function SocialSignup({ onGoogleClick }: { onGoogleClick: () => void }) {
     return (
         <button
@@ -251,6 +327,11 @@ function SocialSignup({ onGoogleClick }: { onGoogleClick: () => void }) {
     );
 }
 
+/**
+ * Divider
+ * ----------------------------------------------------------------------------
+ * Visual separator with "OR" text in the middle.
+ */
 function Divider() {
     return (
         <div className="relative my-6">

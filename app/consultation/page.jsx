@@ -1,34 +1,102 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Header } from "@/components/Header"
-import { Footer } from "@/components/Footer"
-import { Button } from "@/components/ui/button"
-import { Calendar, Clock, User, MapPin, MessageSquare } from 'lucide-react'
-import ChatBot from "@/components/ChatBot"
+// ============================================================================
+// IMPORTS
+// ============================================================================
 
+// React & Next.js Hooks
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+
+// Layout & Custom Components
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import ChatBot from "@/components/ChatBot";
+
+// UI Components
+import { Button } from "@/components/ui/button";
+
+// Icons (Lucide React)
+import { Calendar, Clock, User, MapPin } from 'lucide-react';
+
+/**
+ * ConsultationPage Component
+ * ----------------------------------------------------------------------------
+ * Handles the booking of vehicle consultations and test drives.
+ * * * Key Features:
+ * - Dynamic Form Pre-filling: Uses URL Search Params (?make=Toyota&model=Prius)
+ * to auto-fill vehicle details if the user navigates from a vehicle listing.
+ * - Form State Management: Handles multiple inputs (text, select, radio) in one object.
+ * - User Feedback: Shows a success message upon submission.
+ */
 export default function ConsultationPage() {
+  
+  // Hook to read URL query parameters
+  const searchParams = useSearchParams();
+
+  // ==========================================================================
+  // STATE MANAGEMENT
+  // ==========================================================================
+
+  // Single state object for all form fields
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
+    vehicleDetails: "", // Auto-filled from URL
     vehicleType: "",
     consultationType: "",
     preferredDate: "",
     preferredTime: "",
     message: "",
-  })
+  });
 
-  const [submitted, setSubmitted] = useState(false)
+  // UI state for submission feedback
+  const [submitted, setSubmitted] = useState(false);
 
+  // ==========================================================================
+  // SIDE EFFECTS (Logic)
+  // ==========================================================================
+
+  /**
+   * Effect: Check URL parameters on component mount.
+   * If a user clicks "Book Appointment" on a car details page, the URL will look like:
+   * /consultation?make=Toyota&model=Prius&year=2022
+   * This effect captures those values and updates the form state automatically.
+   */
+  useEffect(() => {
+    const make = searchParams.get("make");
+    const model = searchParams.get("model");
+    const year = searchParams.get("year");
+
+    if (make && model && year) {
+      setFormData((prev) => ({
+        ...prev,
+        vehicleDetails: `${year} ${make} ${model}`,
+        message: `I'm interested in the ${year} ${make} ${model}. Please provide more details.`
+      }));
+    }
+  }, [searchParams]);
+
+  // ==========================================================================
+  // EVENT HANDLERS
+  // ==========================================================================
+
+  // Updates specific field in formData state based on input name
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
+  /**
+   * Mock Submission Handler
+   * In a real integration, this would use fetch() to POST formData to the backend.
+   */
   const handleSubmit = (e) => {
-    e.preventDefault()
-    setSubmitted(true)
+    e.preventDefault();
+    setSubmitted(true);
+    
+    // Simulate API delay and reset form
     setTimeout(() => {
       setFormData({
         fullName: "",
@@ -39,16 +107,22 @@ export default function ConsultationPage() {
         preferredDate: "",
         preferredTime: "",
         message: "",
-      })
-      setSubmitted(false)
-    }, 3000)
-  }
+      });
+      setSubmitted(false);
+    }, 3000);
+  };
+
+  // ==========================================================================
+  // RENDER UI
+  // ==========================================================================
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Hero Section */}
+      {/* ---------------------------------------------------------------------
+        HERO SECTION
+        --------------------------------------------------------------------- */}
       <section
         className="relative h-96 bg-gradient-to-r from-primary via-primary/90 to-secondary text-primary-foreground flex items-center mb-24"
         style={{
@@ -60,17 +134,23 @@ export default function ConsultationPage() {
       >
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
         <div className="relative max-w-7xl mx-auto px-4 w-full">
-          <h1 className="text-6xl font-bold mb-4 text-balance">Book a Consultation</h1>
+          <h1 className="text-6xl font-bold mb-4 text-balance">Book an</h1> <h1 className="text-6xl font-bold mb-4 text-balance italic">Appointment</h1>
           <p className="text-xl opacity-90 text-balance max-w-2xl">
             Connect with our technical experts for personalized vehicle guidance and advice.
           </p>
         </div>
       </section>
 
+      {/* ---------------------------------------------------------------------
+        MAIN CONTENT GRID
+        --------------------------------------------------------------------- */}
       <div className="max-w-7xl mx-auto px-4 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Consultation Benefits */}
+          
+          {/* === LEFT COLUMN: BENEFITS SIDEBAR === */}
           <div className="lg:col-span-1 space-y-6">
+            
+            {/* Benefit Card 1: Expert Guidance */}
             <div className="bg-card rounded-lg p-6 border border-border shadow-sm hover:shadow-md transition">
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
@@ -87,6 +167,7 @@ export default function ConsultationPage() {
               </div>
             </div>
 
+            {/* Benefit Card 2: Flexible Scheduling */}
             <div className="bg-card rounded-lg p-6 border border-border shadow-sm hover:shadow-md transition">
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
@@ -103,6 +184,7 @@ export default function ConsultationPage() {
               </div>
             </div>
 
+            {/* Benefit Card 3: Locations */}
             <div className="bg-card rounded-lg p-6 border border-border shadow-sm hover:shadow-md transition">
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
@@ -120,13 +202,14 @@ export default function ConsultationPage() {
             </div>
           </div>
 
-          {/* Consultation Form */}
+          {/* === RIGHT COLUMN: BOOKING FORM === */}
           <div className="lg:col-span-2">
             <div className="bg-card rounded-lg p-8 border border-border shadow-sm">
               <h2 className="text-3xl font-bold mb-6">Schedule Your Consultation</h2>
 
+              {/* Success Message Banner */}
               {submitted && (
-                <div className="mb-6 p-4 rounded-lg bg-green-50 border border-green-200">
+                <div className="mb-6 p-4 rounded-lg bg-green-50 border border-green-200 animate-in fade-in">
                   <p className="text-green-800 font-semibold">
                     Thank you! We've received your consultation request. Our team will contact you shortly.
                   </p>
@@ -134,7 +217,8 @@ export default function ConsultationPage() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Full Name */}
+                
+                {/* --- Input: Full Name --- */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">Full Name *</label>
                   <input
@@ -148,7 +232,7 @@ export default function ConsultationPage() {
                   />
                 </div>
 
-                {/* Email */}
+                {/* --- Input: Email --- */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">Email Address *</label>
                   <input
@@ -162,7 +246,7 @@ export default function ConsultationPage() {
                     />
                 </div>
 
-                {/* Phone */}
+                {/* --- Input: Phone --- */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">Phone Number *</label>
                   <input
@@ -176,7 +260,19 @@ export default function ConsultationPage() {
                   />
                 </div>
 
-                {/* Vehicle Type */}
+                {/* --- Input: Auto-Filled Vehicle Details (Read Only) --- */}
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Selected Vehicle</label>
+                  <input
+                    type="text"
+                    name="vehicleDetails"
+                    value={formData.vehicleDetails}
+                    disabled
+                    className="w-full px-4 py-3 rounded-lg bg-muted border border-border text-muted-foreground cursor-not-allowed"
+                  />
+                </div>
+
+                {/* --- Dropdown: Vehicle Type --- */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">Interested Vehicle Type *</label>
                   <select
@@ -195,12 +291,12 @@ export default function ConsultationPage() {
                   </select>
                 </div>
 
-                {/* Consultation Type */}
+                {/* --- Radio Buttons: Consultation Type --- */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">Consultation Type *</label>
                   <div className="space-y-2">
                     {["General Inquiry", "Test Drive", "Finance Options", "Trade-in Valuation"].map((type) => (
-                      <label key={type} className="flex items-center gap-3 cursor-pointer">
+                      <label key={type} className="flex items-center gap-3 cursor-pointer hover:text-primary transition-colors">
                         <input
                           type="radio"
                           name="consultationType"
@@ -208,7 +304,7 @@ export default function ConsultationPage() {
                           checked={formData.consultationType === type}
                           onChange={handleChange}
                           required
-                          className="w-4 h-4"
+                          className="w-4 h-4 accent-primary"
                         />
                         <span className="text-sm">{type}</span>
                       </label>
@@ -216,7 +312,7 @@ export default function ConsultationPage() {
                   </div>
                 </div>
 
-                {/* Preferred Date */}
+                {/* --- Input: Date Selection --- */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">Preferred Date *</label>
                   <input
@@ -229,7 +325,7 @@ export default function ConsultationPage() {
                   />
                 </div>
 
-                {/* Preferred Time */}
+                {/* --- Dropdown: Time Selection --- */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">Preferred Time *</label>
                   <select
@@ -249,7 +345,7 @@ export default function ConsultationPage() {
                   </select>
                 </div>
 
-                {/* Message */}
+                {/* --- Textarea: Message --- */}
                 <div>
                   <label className="block text-sm font-semibold mb-2">Additional Message</label>
                   <textarea
@@ -257,12 +353,12 @@ export default function ConsultationPage() {
                     value={formData.message}
                     onChange={handleChange}
                     placeholder="Tell us more about your needs..."
-                    rows="4"
+                    rows={4}
                     className="w-full px-4 py-3 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                   />
                 </div>
 
-                {/* Submit Button */}
+                {/* --- Submit Button --- */}
                 <Button type="submit" className="w-full" size="lg">
                   <Calendar className="mr-2" size={18} />
                   Schedule Consultation
@@ -273,10 +369,10 @@ export default function ConsultationPage() {
         </div>
       </div>
 
-      {/* Chatbot Icon */}
+      {/* Global Widgets */}
       <ChatBot />
-
       <Footer />
+      
     </div>
   )
 }

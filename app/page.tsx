@@ -1,29 +1,45 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Header } from "@/components/Header"
-import { Footer } from "@/components/Footer"
-import { Button } from "../components/ui/button"
-import { ChevronRight, Search, Calendar, MessageSquare, Star, Quote, Play } from "lucide-react"
-import {authOptions} from "@/app/api/auth/[...nextauth]/route";
-import {useSession} from "next-auth/react";
-import {handleSubscribe} from "@/app/APITriggers/handleSubscribe";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import Autoplay from "embla-carousel-autoplay"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import ChatBot from "@/components/ChatBot"
+// ============================================================================
+// IMPORTS
+// ============================================================================
 
+// React & Next.js Core
+import { useState } from "react";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+
+// Layout & Custom Components
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import ChatBot from "@/components/ChatBot";
+
+// UI Components (Shadcn/UI & Radix)
+import { Button } from "@/components/ui/button";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Autoplay from "embla-carousel-autoplay";
+
+// Icons (Lucide React)
+import { ChevronRight, Search, Calendar, MessageSquare, Star, Quote, Play } from "lucide-react";
+
+// Logic & API Triggers
+import { handleSubscribe } from "@/app/APITriggers/handleSubscribe";
+
+// ============================================================================
+// TYPES & MOCK DATA
+// ============================================================================
 
 interface Vehicle {
-  id: number
-  name: string
-  price: string
-  status: "Available" | "Shipped" | "Not Available"
-  image: string
-  location: string
+  id: number;
+  name: string;
+  price: string;
+  status: "Available" | "Shipped" | "Not Available";
+  image: string;
+  location: string;
 }
 
+// TODO: Replace with API Fetch (GET /api/vehicles/featured)
 const featuredVehicles: Vehicle[] = [
   {
     id: 1,
@@ -57,14 +73,14 @@ const featuredVehicles: Vehicle[] = [
     image: "/suzuki-wagon-r-2021.jpg",
     location: "Nugegoda Branch",
   },
-]
+];
 
+// TODO: Replace with API Fetch or CMS Data
 const videoReviews = [
   {
     id: 1,
     title: "2022 Toyota Prius Full Review - Is It Worth The Money?",
-    description:
-      "Detailed walkthrough of the 2022 Toyota Prius including exterior, interior, features, and driving experience.",
+    description: "Detailed walkthrough of the 2022 Toyota Prius including exterior, interior, features, and driving experience.",
     videoId: "dQw4w9WgXcQ", // Replace with actual YouTube video ID
     thumbnail: `https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg`,
     uploadDate: "2 weeks ago",
@@ -72,8 +88,7 @@ const videoReviews = [
   {
     id: 2,
     title: "Honda Civic 2021 - Complete Technical Review",
-    description:
-      "In-depth technical analysis of the Honda Civic 2021 model, covering engine performance and safety features.",
+    description: "In-depth technical analysis of the Honda Civic 2021 model, covering engine performance and safety features.",
     videoId: "dQw4w9WgXcQ",
     thumbnail: `https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg`,
     uploadDate: "1 month ago",
@@ -94,28 +109,54 @@ const videoReviews = [
     thumbnail: `https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg`,
     uploadDate: "1 week ago",
   },
-]
+];
 
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
+/**
+ * Home Component (Landing Page)
+ * ----------------------------------------------------------------------------
+ * The entry point of the application.
+ * * * Features:
+ * - Hero Section: Branding and Call to Action.
+ * - Quick Search: Floating search bar for vehicles.
+ * - Featured Section: Highlights specific cars (Mock data for now).
+ * - "How It Works": Educational section for new users.
+ * - Social Proof: YouTube Reviews and Customer Testimonials (Carousel).
+ * - Lead Gen: Newsletter Subscription form.
+ */
 export default function Home() {
+  
+  // ==========================================================================
+  // STATE & HOOKS
+  // ==========================================================================
+  
+  // Newsletter Email State
+  const [email, setEmail] = useState<string>("");
+  
+  // Authentication Session
+  const { data: session } = useSession();
 
-
-    const [email, setEmail] = useState<string>("")
-    const {data:session} = useSession();
-
+  // ==========================================================================
+  // RENDER UI
+  // ==========================================================================
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
+      {/* --- Conditional: Welcome Message for Logged-In Users --- */}
+      {session && (
+        <div className="text-center py-4 bg-green-100 text-green-700 animate-in fade-in slide-in-from-top-2">
+          Welcome, <b>{session.user?.name || session.user?.email}</b> 👋
+        </div>
+      )}
 
-        {/* SHOW LOGGED USER */}
-        {session && (
-            <div className="text-center py-4 bg-green-100 text-green-700">
-                Welcome, <b>{session.user?.name || session.user?.email}</b> 👋
-            </div>
-        )}
-
-      {/* Hero Section */}
+      {/* ---------------------------------------------------------------------
+        HERO SECTION
+        --------------------------------------------------------------------- */}
       <section
         className="relative h-[36rem] bg-gradient-to-br from-primary via-primary/90 to-accent text-primary-foreground flex items-center"
         style={{
@@ -125,11 +166,17 @@ export default function Home() {
           backgroundPosition: "center",
         }}
       >
+        {/* Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30"></div>
+        
+        {/* Hero Content */}
         <div className="relative max-w-7xl mx-auto px-4 w-full">
           <div className="max-w-2xl space-y-6">
             <h1 className="text-5xl lg:text-6xl font-bold mb-4 text-balance leading-tight">
-              Find Your Next Vehicle at Sameera Auto Traders
+              Find Your Next Vehicle at
+            </h1>
+            <h1 className="text-5xl lg:text-6xl font-bold mb-4 text-balance italic leading-tight italic">
+              Smart Auto Hub
             </h1>
             <p className="text-xl lg:text-2xl mb-8 opacity-95 text-balance leading-relaxed">
               Browse, book, and consult online—our entire inventory at your fingertips.
@@ -141,36 +188,46 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Quick Search Bar */}
+      {/* ---------------------------------------------------------------------
+        QUICK SEARCH BAR
+        --------------------------------------------------------------------- */}
       <section className="max-w-7xl mx-auto px-4 -mt-12 relative z-10 mb-16">
         <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
-            <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            
+            {/* Search Input */}
             <input
               type="text"
               placeholder="Search by Make, Model..."
               className="flex-1 px-4 py-3 rounded bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
+            
+            {/* Branch Filter */}
             <Select>
               <SelectTrigger className="flex-1 py-6 px-6 rounded-lg bg-input border-2 border-border text-foreground">
-              <SelectValue placeholder="Filter by Location/Branch..." />
+                <SelectValue placeholder="Filter by Location/Branch..." />
               </SelectTrigger>
               <SelectContent>
-              <SelectItem value="all">All Locations</SelectItem>
-              <SelectItem value="nugegoda">Nugegoda Branch</SelectItem>
-              <SelectItem value="colombo">Colombo Branch</SelectItem>
+                <SelectItem value="all">All Locations</SelectItem>
+                <SelectItem value="nugegoda">Nugegoda Branch</SelectItem>
+                <SelectItem value="colombo">Colombo Branch</SelectItem>
               </SelectContent>
             </Select>
+            
+            {/* Search Button */}
             <Button asChild className="h-13">
               <Link href="/vehicles">
-              <Search size={18} className="mr-2" />
-              Search
+                <Search size={18} className="mr-2" />
+                Search
               </Link>
             </Button>
-            </div>
+          </div>
         </div>
       </section>
 
-      {/* Featured Vehicles */}
+      {/* ---------------------------------------------------------------------
+        FEATURED VEHICLES
+        --------------------------------------------------------------------- */}
       <section className="max-w-7xl mx-auto px-4 mb-24">
         <div className="flex items-center justify-between mb-10">
           <div>
@@ -190,6 +247,7 @@ export default function Home() {
               key={vehicle.id}
               className="bg-card rounded-xl overflow-hidden border border-border hover:shadow-2xl hover:border-primary/50 transition-all duration-300 group"
             >
+              {/* Card Image & Status Badge */}
               <div className="relative h-52 bg-muted overflow-hidden">
                 <img
                   src={vehicle.image || "/placeholder.svg"}
@@ -205,6 +263,7 @@ export default function Home() {
                 </span>
               </div>
 
+              {/* Card Details */}
               <div className="p-5">
                 <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">{vehicle.name}</h3>
                 <p className="text-primary font-bold text-xl mb-3">{vehicle.price}</p>
@@ -224,6 +283,7 @@ export default function Home() {
           ))}
         </div>
 
+        {/* Mobile View All Button */}
         <div className="mt-8 text-center md:hidden">
           <Button variant="outline" asChild size="lg">
             <Link href="/vehicles">
@@ -233,7 +293,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works */}
+      {/* ---------------------------------------------------------------------
+        HOW IT WORKS
+        --------------------------------------------------------------------- */}
       <section className="bg-gradient-to-br from-secondary/10 via-primary/5 to-accent/10 py-20 mb-24">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -244,6 +306,8 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            {/* Step 1: Search */}
             <div className="bg-card p-8 rounded-xl border border-border text-center hover:shadow-xl transition-shadow duration-300 relative group">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full shadow-lg text-white font-bold text-xl">
                 1
@@ -257,6 +321,7 @@ export default function Home() {
               </p>
             </div>
 
+            {/* Step 2: Consult */}
             <div className="bg-card p-8 rounded-xl border border-border text-center hover:shadow-xl transition-shadow duration-300 relative group">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 inline-flex items-center justify-center w-16 h-16 bg-green-500 rounded-full shadow-lg text-white font-bold text-xl">
                 2
@@ -270,6 +335,7 @@ export default function Home() {
               </p>
             </div>
 
+            {/* Step 3: Book */}
             <div className="bg-card p-8 rounded-xl border border-border text-center hover:shadow-xl transition-shadow duration-300 relative group">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 inline-flex items-center justify-center w-16 h-16 bg-purple-500 rounded-full shadow-lg text-white font-bold text-xl">
                 3
@@ -286,7 +352,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* YT Reviews */}
+      {/* ---------------------------------------------------------------------
+        YOUTUBE REVIEWS
+        --------------------------------------------------------------------- */}
       <section className="max-w-7xl mx-auto px-4 mb-24">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
           <div>
@@ -300,6 +368,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="flex items-center gap-2"
             >
+              {/* YouTube Icon */}
               <svg className="w-5 h-5 fill-red-600" viewBox="0 0 24 24">
                 <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
               </svg>
@@ -315,6 +384,7 @@ export default function Home() {
               className="bg-card rounded-xl overflow-hidden border border-border hover:shadow-2xl hover:border-red-500/50 transition-all duration-300 group cursor-pointer"
               onClick={() => window.open(`https://www.youtube.com/watch?v=${video.videoId}`, "_blank")}
             >
+              {/* Thumbnail with Overlay */}
               <div className="relative h-48 bg-muted overflow-hidden">
                 <img
                   src={video.thumbnail || "/placeholder.svg"}
@@ -334,6 +404,7 @@ export default function Home() {
                 </span>
               </div>
 
+              {/* Video Info */}
               <div className="p-5">
                 <h3 className="font-bold text-base mb-2 line-clamp-2 group-hover:text-primary transition-colors leading-snug">
                   {video.title}
@@ -349,9 +420,9 @@ export default function Home() {
         </div>
       </section>
 
-      
-
-      {/* Customer Reviews */}
+      {/* ---------------------------------------------------------------------
+        CUSTOMER TESTIMONIALS (CAROUSEL)
+        --------------------------------------------------------------------- */}
       <section className="max-w-7xl mx-auto px-4 mb-16">
         <h2 className="text-3xl font-bold mb-12 text-center">What Our Customers Say</h2>
 
@@ -373,8 +444,7 @@ export default function Home() {
                 name: "Rajith Fernando",
                 location: "Colombo",
                 rating: 5,
-                review:
-                  "Excellent service! Found the perfect Toyota Prius for my family. The online booking system made everything so convenient.",
+                review: "Excellent service! Found the perfect Toyota Prius for my family. The online booking system made everything so convenient.",
                 date: "2 weeks ago",
                 image: "/professional-sri-lankan-businessman-customer-portr.jpg",
               },
@@ -382,8 +452,7 @@ export default function Home() {
                 name: "Nimal Perera",
                 location: "Nugegoda",
                 rating: 5,
-                review:
-                  "Very professional team. They helped me understand every detail about the Honda Civic I purchased. Highly recommend!",
+                review: "Very professional team. They helped me understand every detail about the Honda Civic I purchased. Highly recommend!",
                 date: "1 month ago",
                 image: "/satisfied-male-customer-with-car-keys-smiling.jpg",
               },
@@ -391,8 +460,7 @@ export default function Home() {
                 name: "Samantha Silva",
                 location: "Kandy",
                 rating: 4,
-                review:
-                  "Great experience overall. The consultation service was particularly helpful in making my decision. Will definitely come back.",
+                review: "Great experience overall. The consultation service was particularly helpful in making my decision. Will definitely come back.",
                 date: "3 weeks ago",
                 image: "/professional-woman-customer-happy-with-new-car.jpg",
               },
@@ -400,8 +468,7 @@ export default function Home() {
                 name: "Priya Wickramasinghe",
                 location: "Galle",
                 rating: 5,
-                review:
-                  "Best car dealership I've dealt with! Transparent pricing, no hidden charges, and excellent after-sales support.",
+                review: "Best car dealership I've dealt with! Transparent pricing, no hidden charges, and excellent after-sales support.",
                 date: "1 week ago",
                 image: "/happy-female-customer-in-front-of-dealership.jpg",
               },
@@ -409,8 +476,7 @@ export default function Home() {
                 name: "Kasun Jayawardena",
                 location: "Colombo",
                 rating: 5,
-                review:
-                  "The technical specialist provided valuable insights. Found exactly what I was looking for within my budget.",
+                review: "The technical specialist provided valuable insights. Found exactly what I was looking for within my budget.",
                 date: "2 months ago",
                 image: "/satisfied-young-man-with-new-car-showing-thumbs-up.jpg",
               },
@@ -418,6 +484,8 @@ export default function Home() {
               <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                 <div className="p-4">
                   <div className="bg-card rounded-lg p-6 border border-border h-full flex flex-col">
+                    
+                    {/* Customer Info Header */}
                     <div className="flex items-start gap-4 mb-4">
                       <img
                         src={testimonial.image || "/placeholder.svg"}
@@ -443,6 +511,7 @@ export default function Home() {
                       <Quote className="h-8 w-8 text-primary/20 flex-shrink-0" />
                     </div>
 
+                    {/* Review Text */}
                     <p className="text-muted-foreground mb-4 flex-grow leading-relaxed">{testimonial.review}</p>
 
                     <div className="pt-4 border-t border-border">
@@ -458,13 +527,15 @@ export default function Home() {
         </Carousel>
       </section>
 
-      {/* Newsletter */}
+      {/* ---------------------------------------------------------------------
+        NEWSLETTER SUBSCRIPTION
+        --------------------------------------------------------------------- */}
       <section className="max-w-4xl mx-auto px-4 mb-16">
         <div className="bg-gradient-to-r from-primary to-accent rounded-lg p-8 text-center text-primary-foreground">
           <h2 className="text-3xl font-bold mb-4">Get Updates on New Stock & Offers</h2>
           <p className="mb-6 opacity-90">Subscribe to our newsletter for exclusive deals and new vehicle arrivals.</p>
 
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
             <input
               type="email"
               placeholder="Enter your email address"
@@ -472,17 +543,20 @@ export default function Home() {
               onChange={(e) => setEmail(e.target.value)}
               className="flex-1 px-4 py-3 rounded bg-white/20 border border-white/30 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white"
             />
-            <Button variant="secondary" onClick={()=>handleSubscribe(email,session?.user?.id)} className="h-12">
+            {/* Trigger handleSubscribe with session ID if logged in */}
+            <Button 
+              variant="secondary" 
+              onClick={() => handleSubscribe(email, session?.user?.id)} 
+              className="h-12"
+            >
               Subscribe
             </Button>
-            </div>
+          </div>
         </div>
       </section>
 
-      {/* Chatbot Icon */}
+      {/* Global Widgets */}
       <ChatBot />
-
-
       <Footer />
     </div>
   )
